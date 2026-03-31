@@ -203,6 +203,29 @@ export async function printBarcodeViaWindows(
     printWindow.webContents.on('did-finish-load', () => {
       console.log('✓ HTML content loaded, waiting for barcode rendering...');
 
+      // Debug: Check if JsBarcode loaded
+      setTimeout(async () => {
+        try {
+          const jsbarCodeExists = await printWindow.webContents.executeJavaScript(`
+            typeof JsBarcode !== 'undefined'
+          `);
+          console.log('🔍 JsBarcode loaded?', jsbarCodeExists);
+
+          const barcodeContent = await printWindow.webContents.executeJavaScript(`
+            document.querySelector('#barcode')?.innerHTML || 'BARCODE ELEMENT NOT FOUND'
+          `);
+          console.log('🔍 Barcode SVG content (first 300 chars):', barcodeContent.substring(0, 300));
+
+          const bodyContent = await printWindow.webContents.executeJavaScript(`
+            document.body?.innerHTML?.substring(0, 500) || 'BODY NOT FOUND'
+          `);
+          console.log('🔍 Body HTML (first 500 chars):', bodyContent);
+
+        } catch (debugError: any) {
+          console.error('❌ Debug check error:', debugError.message);
+        }
+      }, 1000);
+
       // Wait for barcode to render (JsBarcode CDN needs time to load and execute)
       setTimeout(() => {
         console.log('✓ Barcode rendered, sending to printer...');

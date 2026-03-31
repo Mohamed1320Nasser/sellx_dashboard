@@ -7,8 +7,9 @@ import { ConnectionTab } from '../../components/printer/ConnectionTab';
 import { ContentTab } from '../../components/printer/ContentTab';
 import { AutomationTab } from '../../components/printer/AutomationTab';
 import { LabelsTab } from '../../components/printer/LabelsTab';
-import { Printer, Save, RotateCcw, AlertCircle, Cable, Receipt, Zap, Tag } from 'lucide-react';
+import { Printer, Save, RotateCcw, AlertCircle, Cable, Receipt, Zap, Tag, TestTube } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { printBarcode } from '../../services/printService';
 
 export default function PrinterSettings() {
   const config = usePrinterConfigStore();
@@ -53,6 +54,24 @@ export default function PrinterSettings() {
     }
   };
 
+  const handleTestPrint = async () => {
+    try {
+      toast.loading('جاري طباعة ملصق تجريبي...');
+      await printBarcode({
+        sku: 'TEST-12345',
+        productName: 'منتج تجريبي / Test Product',
+        price: 99.99,
+        quantity: 1,
+      });
+      toast.dismiss();
+      toast.success('✓ تم إرسال الملصق التجريبي للطباعة');
+    } catch (error: any) {
+      toast.dismiss();
+      toast.error(error.message || 'فشلت الطباعة التجريبية');
+      console.error('Test print error:', error);
+    }
+  };
+
   const tabs = [
     {
       id: 'connection',
@@ -94,6 +113,13 @@ export default function PrinterSettings() {
 
             {/* Action Buttons */}
             <div className="flex items-center gap-3">
+              <button
+                onClick={handleTestPrint}
+                className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg flex items-center gap-2 transition-colors"
+              >
+                <TestTube className="w-4 h-4" />
+                طباعة تجريبية
+              </button>
               <button
                 onClick={handleReset}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 transition-colors"
