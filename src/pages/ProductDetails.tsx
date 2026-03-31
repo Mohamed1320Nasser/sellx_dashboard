@@ -11,6 +11,7 @@ import { formatTableDate } from '../utils/dateUtils';
 import type { Product } from '../types';
 import { printBarcode } from '../services/printService';
 import toast from 'react-hot-toast';
+import { PrintBarcodeModal } from '../components/modals/PrintBarcodeModal';
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +19,11 @@ const ProductDetails: React.FC = () => {
   const { company } = useSessionAuthStore();
 
   const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    product: Product | null;
+  }>({ isOpen: false, product: null });
+
+  const [printModal, setPrintModal] = useState<{
     isOpen: boolean;
     product: Product | null;
   }>({ isOpen: false, product: null });
@@ -73,12 +79,25 @@ const ProductDetails: React.FC = () => {
       return;
     }
 
-    printBarcode({
-      sku: product.sku,
-      productName: product.name,
-      price: product.sellingPrice,
-      quantity: 1
-    });
+    setPrintModal({ isOpen: true, product });
+  };
+
+  const handlePrint = async (quantity: number) => {
+    if (!printModal.product) return;
+
+    try {
+      await printBarcode({
+        sku: printModal.product.sku,
+        productName: printModal.product.name,
+        price: printModal.product.sellingPrice,
+        quantity: quantity
+      });
+
+      toast.success(`تم طباعة ${quantity} نسخة من الباركود بنجاح`);
+    } catch (error: any) {
+      const errorMessage = error.message || 'فشلت طباعة الباركود';
+      toast.error(errorMessage);
+    }
   };
 
   if (isLoading) {
@@ -362,6 +381,20 @@ const ProductDetails: React.FC = () => {
           type="danger"
           isLoading={deleteMutation.isPending}
         />
+
+        {/* Print Barcode Modal */}
+        {printModal.product && (
+          <PrintBarcodeModal
+            isOpen={printModal.isOpen}
+            onClose={() => setPrintModal({ isOpen: false, product: null })}
+            onPrint={handlePrint}
+            product={{
+              name: printModal.product.name,
+              sku: printModal.product.sku,
+              price: printModal.product.sellingPrice,
+            }}
+          />
+        )}
       </div>
     </Layout>
   );

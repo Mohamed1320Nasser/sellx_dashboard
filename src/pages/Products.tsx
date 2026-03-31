@@ -14,6 +14,7 @@ import {
 import { useCategories } from "../hooks/api/useCategories";
 import type { Product } from "../types";
 import { printBarcode } from "../services/printService";
+import { PrintBarcodeModal } from "../components/modals/PrintBarcodeModal";
 import toast from 'react-hot-toast';
 
 const Products: React.FC = () => {
@@ -28,6 +29,10 @@ const Products: React.FC = () => {
   // Removed showCreateModal state - now using navigation
   // Removed editingProduct state - now using navigation to edit page
   const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    product: Product | null;
+  }>({ isOpen: false, product: null });
+  const [printModal, setPrintModal] = useState<{
     isOpen: boolean;
     product: Product | null;
   }>({ isOpen: false, product: null });
@@ -180,26 +185,29 @@ const Products: React.FC = () => {
     setCurrentPage(1);
   }, []);
 
-  const handlePrintBarcode = async (product: Product) => {
+  const handlePrintBarcode = (product: Product) => {
     if (!product.sku) {
       toast.error("لا يوجد رمز SKU لهذا المنتج");
       return;
     }
+    setPrintModal({ isOpen: true, product });
+  };
 
-    const loadingToast = toast.loading('جاري طباعة الباركود...');
+  const handlePrint = async (quantity: number) => {
+    if (!printModal.product) return;
 
     try {
       await printBarcode({
-        sku: product.sku,
-        productName: product.name,
-        price: product.sellingPrice,
-        quantity: 1
+        sku: printModal.product.sku,
+        productName: printModal.product.name,
+        price: printModal.product.sellingPrice,
+        quantity: quantity
       });
 
-      toast.success('تم طباعة الباركود بنجاح', { id: loadingToast });
+      toast.success(`تم طباعة ${quantity} نسخة من الباركود بنجاح`);
     } catch (error: any) {
       const errorMessage = error.message || 'فشلت طباعة الباركود';
-      toast.error(errorMessage, { id: loadingToast });
+      toast.error(errorMessage);
     }
   };
 
@@ -334,6 +342,20 @@ const Products: React.FC = () => {
           type="danger"
           isLoading={deleteMutation.isPending}
         />
+
+        {/* Print Barcode Modal */}
+        {printModal.product && (
+          <PrintBarcodeModal
+            isOpen={printModal.isOpen}
+            onClose={() => setPrintModal({ isOpen: false, product: null })}
+            onPrint={handlePrint}
+            product={{
+              name: printModal.product.name,
+              sku: printModal.product.sku,
+              price: printModal.product.sellingPrice,
+            }}
+          />
+        )}
       </div>
     </Layout>
   );

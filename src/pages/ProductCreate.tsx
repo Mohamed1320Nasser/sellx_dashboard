@@ -10,11 +10,14 @@ import { productService } from '../services/productService';
 import toast from 'react-hot-toast';
 import { validateBarcodeFormat } from '../services/barcodeService';
 import type { Product } from '../types';
+import { BarcodePreview } from '../components/barcode/BarcodePreview';
+import { usePrinterConfigStore } from '../stores/printerConfigStore';
 
 const ProductCreate: React.FC = () => {
   const navigate = useNavigate();
   const { company } = useSessionAuthStore();
   const companyId = company?.companyId || company?.company?.id;
+  const printerConfig = usePrinterConfigStore();
 
   // Form state
   const [formData, setFormData] = useState({
@@ -238,23 +241,53 @@ const ProductCreate: React.FC = () => {
                 </div>
               ) : (
                 // Barcode set - show it
-                <div className="bg-gray-50 rounded-lg p-4 text-center">
-                  <p className="text-xs text-gray-500 mb-1">
-                    {barcodeSource === 'scanned' ? 'باركود ممسوح' : 'باركود محلي'}
-                  </p>
-                  <p className="text-2xl font-mono font-bold text-gray-900">
-                    {formData.barcode}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFormData(prev => ({ ...prev, barcode: '', sku: '' }));
-                      setBarcodeSource(null);
-                    }}
-                    className="text-xs text-blue-600 hover:underline mt-2"
-                  >
-                    تغيير
-                  </button>
+                <div className="space-y-4">
+                  <div className="bg-gray-50 rounded-lg p-4 text-center">
+                    <p className="text-xs text-gray-500 mb-1">
+                      {barcodeSource === 'scanned' ? 'باركود ممسوح' : 'باركود محلي'}
+                    </p>
+                    <p className="text-2xl font-mono font-bold text-gray-900">
+                      {formData.barcode}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, barcode: '', sku: '' }));
+                        setBarcodeSource(null);
+                      }}
+                      className="text-xs text-blue-600 hover:underline mt-2"
+                    >
+                      تغيير
+                    </button>
+                  </div>
+
+                  {/* Barcode Preview - shows when product has name and price */}
+                  {formData.name && formData.sellingPrice && (
+                    <div className="bg-white rounded-lg border-2 border-gray-200 p-4">
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3 text-center">
+                        معاينة الباركود (سيتم طباعته كما هو)
+                      </h4>
+                      <div className="flex justify-center">
+                        <BarcodePreview
+                          barcode={formData.barcode}
+                          productName={formData.name}
+                          price={parseFloat(formData.sellingPrice) || 0}
+                          labelWidth={printerConfig.labelWidth}
+                          labelHeight={printerConfig.labelHeight}
+                          barcodeFormat={printerConfig.barcodeFormat}
+                          barcodeHeight={printerConfig.barcodeHeight}
+                          barcodeWidth={printerConfig.barcodeWidth}
+                          fontSize={printerConfig.labelFontSize}
+                          showBarcodeText={printerConfig.showBarcodeText}
+                          scale={2}
+                          showBorder={true}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 text-center mt-2">
+                        يتم استخدام إعدادات الطابعة من صفحة الإعدادات
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
               {errors.barcode && (

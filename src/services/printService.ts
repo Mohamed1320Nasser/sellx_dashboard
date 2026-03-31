@@ -143,7 +143,7 @@ export const printBarcode = async (options: PrintBarcodeOptions): Promise<void> 
         footerText: printerConfig.footerText || '',
         characterSet: 'windows-1256',
         cutPaper: printerConfig.cutPaper,
-        printCopies: printerConfig.printCopies || 1,
+        printCopies: quantity, // Use quantity from parameter, not from store
       };
 
       const result = await electronPrinter.printLabel(labelData, electronConfig);

@@ -16,6 +16,8 @@ import { AlertCircle } from 'lucide-react';
 export interface BarcodePreviewProps {
   barcode: string;
   companyName?: string;
+  productName?: string;  // NEW: Product name
+  price?: number;        // NEW: Product price
   // Label dimensions
   labelWidth?: number;  // mm
   labelHeight?: number; // mm
@@ -50,6 +52,8 @@ const DEFAULTS = {
 export function BarcodePreview({
   barcode,
   companyName = DEFAULTS.companyName,
+  productName,
+  price,
   labelWidth = DEFAULTS.labelWidth,
   labelHeight = DEFAULTS.labelHeight,
   barcodeHeight = DEFAULTS.barcodeHeight,
@@ -129,13 +133,13 @@ export function BarcodePreview({
         </div>
       ) : (
         <>
-          {/* Company Name */}
-          {companyName && (
+          {/* Product Name */}
+          {productName && (
             <div
               className="font-bold text-center truncate w-full"
-              style={{ fontSize: `${8 * scale}px`, marginBottom: `${1 * scale}mm` }}
+              style={{ fontSize: `${fontSize * scale}px`, marginBottom: `${0.5 * scale}mm` }}
             >
-              {companyName}
+              {productName}
             </div>
           )}
 
@@ -147,6 +151,16 @@ export function BarcodePreview({
               height: 'auto',
             }}
           />
+
+          {/* Price */}
+          {price !== undefined && (
+            <div
+              className="font-bold text-center w-full"
+              style={{ fontSize: `${10 * scale}px`, marginTop: `${0.5 * scale}mm` }}
+            >
+              {price.toFixed(2)} ج.م
+            </div>
+          )}
         </>
       )}
     </div>

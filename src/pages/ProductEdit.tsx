@@ -9,12 +9,15 @@ import { useUpdateProduct } from '../hooks/api/useProducts';
 import { useCategories } from '../hooks/api/useCategories';
 import { productService } from '../services/productService';
 import toast from 'react-hot-toast';
+import { BarcodePreview } from '../components/barcode/BarcodePreview';
+import { usePrinterConfigStore } from '../stores/printerConfigStore';
 
 const ProductEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { company } = useSessionAuthStore();
   const companyId = company?.companyId || company?.company?.id;
+  const printerConfig = usePrinterConfigStore();
 
   // Form state
   const [formData, setFormData] = useState({
@@ -277,6 +280,36 @@ const ProductEdit: React.FC = () => {
                       rows={4}
                     />
                   </div>
+
+                  {/* Barcode Preview - shows when product has SKU, name and price */}
+                  {formData.sku && formData.name && formData.sellingPrice && (
+                    <div className="md:col-span-2">
+                      <div className="bg-white rounded-lg border-2 border-gray-200 p-4">
+                        <h4 className="text-sm font-semibold text-gray-700 mb-3 text-center">
+                          معاينة الباركود (سيتم طباعته كما هو)
+                        </h4>
+                        <div className="flex justify-center">
+                          <BarcodePreview
+                            barcode={formData.sku}
+                            productName={formData.name}
+                            price={parseFloat(formData.sellingPrice) || 0}
+                            labelWidth={printerConfig.labelWidth}
+                            labelHeight={printerConfig.labelHeight}
+                            barcodeFormat={printerConfig.barcodeFormat}
+                            barcodeHeight={printerConfig.barcodeHeight}
+                            barcodeWidth={printerConfig.barcodeWidth}
+                            fontSize={printerConfig.labelFontSize}
+                            showBarcodeText={printerConfig.showBarcodeText}
+                            scale={2}
+                            showBorder={true}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-500 text-center mt-2">
+                          يتم استخدام إعدادات الطابعة من صفحة الإعدادات
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </Card>
