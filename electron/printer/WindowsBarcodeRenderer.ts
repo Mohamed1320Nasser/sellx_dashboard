@@ -113,25 +113,34 @@ function generateBarcodeHTML(labelData: LabelData, config: PrinterConfig): strin
 
   <script>
     // Execute immediately when script loads (not waiting for window.load)
-    (function() {
+    // Wait for JsBarcode to be loaded from CDN
+    (function waitForJsBarcode() {
+      if (typeof JsBarcode === 'undefined') {
+        console.log('Waiting for JsBarcode to load...');
+        setTimeout(waitForJsBarcode, 100);
+        return;
+      }
+
       try {
-        console.log('Generating barcode for SKU: ${sku}');
+        console.log('JsBarcode loaded! Generating barcode for SKU: ${sku}');
+
+        // Use optimal settings for thermal printers (XP-Q361U)
+        // Pure black/white for high contrast on thermal heads
         JsBarcode("#barcode", "${sku}", {
           format: "${barcodeFormat}",
-          width: ${barcodeWidth},
-          height: ${barcodeHeight},
-          displayValue: true,
-          fontSize: 12,
-          margin: 1,
-          background: "#ffffff",
-          lineColor: "#000000",
-          textMargin: 0,
-          font: "monospace",
-          fontOptions: "bold"
+          width: 2,              // Thickness of bars (2 is best for 80mm thermal)
+          height: 60,            // Height in pixels
+          displayValue: true,    // Show the numbers/text below
+          fontSize: 14,          // Readable font size
+          margin: 10,            // Margin around barcode
+          background: "#fff",    // Pure white background
+          lineColor: "#000"      // Pure black bars (critical for thermal)
         });
-        console.log('Barcode generated successfully');
+
+        console.log('✅ Barcode generated successfully');
+        console.log('Barcode SVG innerHTML:', document.querySelector('#barcode')?.innerHTML?.substring(0, 200));
       } catch (error) {
-        console.error('Barcode generation error:', error);
+        console.error('❌ Barcode generation error:', error);
         document.body.innerHTML = '<div style="padding: 5mm; color: red; font-size: 8px;">Error: ' + error.message + '<br>SKU: ${sku}<br>Format: ${barcodeFormat}</div>';
       }
     })();
@@ -228,6 +237,7 @@ export async function printBarcodeViaWindows(
       }, 1000);
 
       // Wait for barcode to render (JsBarcode CDN needs time to load and execute)
+      // Increased timeout to ensure barcode is fully generated
       setTimeout(() => {
         console.log('✓ Barcode rendered, sending to printer...');
 
