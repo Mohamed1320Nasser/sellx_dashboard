@@ -1,6 +1,6 @@
 import { PrinterConfig, ReceiptData, LabelData, PrintResult } from './types';
 import { PrinterError, PrinterErrorCode, classifyPrinterError } from './errors';
-import { printBarcodeViaWindows } from './WindowsBarcodeRenderer';
+import { printBarcodeProfessional } from './ProBarcodeRenderer';
 import escpos from 'escpos';
 // @ts-ignore - escpos-network doesn't have types
 import Network from 'escpos-network';
@@ -535,20 +535,20 @@ export class PrinterManager {
       console.log('   Copies to print:', printCopies);
       console.log('═════════════════════════════════════════════');
 
-      // *** NEW: USB Mode = Use Windows HTML Barcode Renderer ***
-      // Works with ANY Windows printer driver (no raw USB access needed!)
-      // Auto-detects printer if name not specified
+      // *** USB Mode = Use electron-pos-printer (PROFESSIONAL METHOD) ***
+      // This converts the ENTIRE document to raster image before printing
+      // Works with thermal printers that can't render HTML/SVG
       if (printerConfig.connectionType === 'USB') {
 
         console.log('');
         console.log('✨ DETECTED: USB mode!');
-        console.log('📝 Using Windows HTML Barcode Renderer (works with Windows drivers)');
-        console.log('🔄 Redirecting to printBarcodeViaWindows()...');
+        console.log('📝 Using electron-pos-printer (Professional POS Method)');
+        console.log('🔄 Redirecting to printBarcodeProfessional()...');
         console.log('');
 
-        // Use Windows printer with HTML rendering
-        // Will auto-detect printer if printerName is empty
-        return printBarcodeViaWindows(labelData, printerConfig);
+        // Use professional barcode printing
+        // Generates barcode → Converts to raster image → Prints
+        return printBarcodeProfessional(labelData, printerConfig);
       }
 
       // *** ONLY LAN MODE REACHES HERE (USB returned early) ***
