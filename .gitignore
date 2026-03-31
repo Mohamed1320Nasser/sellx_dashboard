@@ -34,3 +34,6 @@ release/
 *.tmp
 temp/
 tmp/
+
+# Printer drivers (too large for GitHub)
+xprinter/
