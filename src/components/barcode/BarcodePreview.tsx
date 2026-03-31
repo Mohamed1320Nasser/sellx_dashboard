@@ -85,7 +85,8 @@ export function BarcodePreview({
           height: barcodeHeight,
           displayValue: showBarcodeText,
           fontSize: fontSize,
-          margin: 5,
+          margin: 15,
+          flat: true,
           background: '#ffffff',
           lineColor: '#000000',
         });

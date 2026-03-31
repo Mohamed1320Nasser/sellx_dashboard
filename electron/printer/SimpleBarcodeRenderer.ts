@@ -187,9 +187,11 @@ function generateLabelHTML(labelData: LabelData): string {
           width: ${barcodeWidth},
           height: ${barcodeHeight},
           displayValue: true,
-          fontSize: 12,
-          margin: 0,
-          flat: true
+          fontSize: 14,
+          margin: 15,
+          flat: true,
+          background: "#ffffff",
+          lineColor: "#000000"
         });
       } catch (e) { console.error(e); }
     };
