@@ -38,6 +38,11 @@ interface PrinterAPI {
   runComprehensiveTest: (connectionType: 'LAN' | 'USB', ip?: string, port?: number, paperWidth?: '58mm' | '80mm') => Promise<any>;
   // Image printing
   printImage: (imageBuffer: ArrayBuffer, config?: any) => Promise<{ success: boolean; message?: string; error?: string }>;
+  // Test methods
+  testMethod1: (config: any) => Promise<{ success: boolean; message?: string; error?: string }>;
+  testMethod2: (config: any) => Promise<{ success: boolean; message?: string; error?: string }>;
+  testMethod3: (config: any) => Promise<{ success: boolean; message?: string; error?: string }>;
+  testMethod4: (config: any) => Promise<{ success: boolean; message?: string; error?: string }>;
 }
 
 declare global {

@@ -134,6 +134,23 @@ const printerAPI = {
   printImage: async (imageBuffer: ArrayBuffer, config?: any) => {
     return ipcRenderer.invoke("printer:printImage", Buffer.from(imageBuffer), config);
   },
+
+  // TEST METHODS - Compare different printing approaches
+  testMethod1: async (config: any) => {
+    return ipcRenderer.invoke("printer:testMethod1", config);
+  },
+
+  testMethod2: async (config: any) => {
+    return ipcRenderer.invoke("printer:testMethod2", config);
+  },
+
+  testMethod3: async (config: any) => {
+    return ipcRenderer.invoke("printer:testMethod3", config);
+  },
+
+  testMethod4: async (config: any) => {
+    return ipcRenderer.invoke("printer:testMethod4", config);
+  },
 };
 
 // Expose the API to the renderer process

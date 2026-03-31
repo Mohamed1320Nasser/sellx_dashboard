@@ -7,6 +7,7 @@ import { ConnectionTab } from '../../components/printer/ConnectionTab';
 import { ContentTab } from '../../components/printer/ContentTab';
 import { AutomationTab } from '../../components/printer/AutomationTab';
 import { LabelsTab } from '../../components/printer/LabelsTab';
+import { TestingTab } from '../../components/printer/TestingTab';
 import { Printer, Save, RotateCcw, AlertCircle, Cable, Receipt, Zap, Tag, TestTube } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { printBarcode } from '../../services/printService';
@@ -102,6 +103,11 @@ export default function PrinterSettings() {
       label: 'الملصقات',
       icon: Tag,
     },
+    {
+      id: 'testing',
+      label: 'اختبار الطباعة',
+      icon: TestTube,
+    },
   ];
 
   return (
@@ -189,6 +195,10 @@ export default function PrinterSettings() {
 
           <TabContent id="labels" activeTab={activeTab}>
             <LabelsTab />
+          </TabContent>
+
+          <TabContent id="testing" activeTab={activeTab}>
+            <TestingTab />
           </TabContent>
         </TabPanel>
 

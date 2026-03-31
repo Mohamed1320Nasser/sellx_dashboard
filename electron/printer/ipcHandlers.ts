@@ -10,6 +10,12 @@ import {
   runComprehensiveTest,
 } from './printerTest';
 import {
+  testMethod1_ElectronNative,
+  testMethod2_ImageToESCPOS,
+  testMethod3_PureESCPOS,
+  testMethod4_HybridESCPOS,
+} from './testMethods';
+import {
   getSystemPrinters,
   getDefaultPrinter,
   findThermalPrinters,
@@ -170,6 +176,38 @@ export function registerPrinterHandlers() {
       return printerManager.printImage(imageBuffer, config);
     }
   );
+
+  /**
+   * TEST METHODS - Compare different printing approaches
+   */
+
+  /**
+   * Test Method 1: Electron Native Print
+   */
+  ipcMain.handle('printer:testMethod1', async (_event, config: PrinterConfig): Promise<PrintResult> => {
+    return testMethod1_ElectronNative(config);
+  });
+
+  /**
+   * Test Method 2: HTML → Image → ESC/POS
+   */
+  ipcMain.handle('printer:testMethod2', async (_event, config: PrinterConfig): Promise<PrintResult> => {
+    return testMethod2_ImageToESCPOS(config);
+  });
+
+  /**
+   * Test Method 3: Pure ESC/POS Text
+   */
+  ipcMain.handle('printer:testMethod3', async (_event, config: PrinterConfig): Promise<PrintResult> => {
+    return testMethod3_PureESCPOS(config);
+  });
+
+  /**
+   * Test Method 4: Hybrid ESC/POS + Image
+   */
+  ipcMain.handle('printer:testMethod4', async (_event, config: PrinterConfig): Promise<PrintResult> => {
+    return testMethod4_HybridESCPOS(config);
+  });
 
   console.log('Printer IPC handlers registered');
 }
