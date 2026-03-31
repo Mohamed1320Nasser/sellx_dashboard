@@ -17,12 +17,9 @@ import { BrowserWindow } from 'electron';
 import { PrinterConfig, PrintResult } from './types';
 import { PrinterError, PrinterErrorCode } from './errors';
 import { selectBestPrinter } from './PrinterDetector';
-import * as path from 'path';
-import * as fs from 'fs/promises';
 
-// Import the beautiful receipt template
-// Note: We'll load it dynamically to handle the QRCode dependency
-import { generateReceiptHTML, ReceiptTemplateData } from '../../src/services/receiptHtmlTemplate';
+// Import the beautiful receipt template (from electron folder to avoid TS errors)
+import { generateReceiptHTML, ReceiptTemplateData } from './receiptTemplate';
 
 export interface ReceiptData {
   // Order Info
