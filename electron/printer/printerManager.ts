@@ -1,6 +1,6 @@
 import { PrinterConfig, ReceiptData, LabelData, PrintResult } from './types';
 import { PrinterError, PrinterErrorCode, classifyPrinterError } from './errors';
-import { printBarcodeProfessional } from './ProBarcodeRenderer';
+import { printBarcodeSimple } from './SimpleBarcodeRenderer';
 import escpos from 'escpos';
 // @ts-ignore - escpos-network doesn't have types
 import Network from 'escpos-network';
@@ -535,20 +535,13 @@ export class PrinterManager {
       console.log('   Copies to print:', printCopies);
       console.log('═════════════════════════════════════════════');
 
-      // *** USB Mode = Use electron-pos-printer (PROFESSIONAL METHOD) ***
-      // This converts the ENTIRE document to raster image before printing
-      // Works with thermal printers that can't render HTML/SVG
+      // *** USB Mode = Use SIMPLE Electron Native Printing ***
+      // Uses Electron's built-in print API - works with ALL printers
       if (printerConfig.connectionType === 'USB') {
-
         console.log('');
-        console.log('✨ DETECTED: USB mode!');
-        console.log('📝 Using electron-pos-printer (Professional POS Method)');
-        console.log('🔄 Redirecting to printBarcodeProfessional()...');
+        console.log('✨ USB mode - Using simple Electron print');
         console.log('');
-
-        // Use professional barcode printing
-        // Generates barcode → Converts to raster image → Prints
-        return printBarcodeProfessional(labelData, printerConfig);
+        return printBarcodeSimple(labelData, printerConfig);
       }
 
       // *** ONLY LAN MODE REACHES HERE (USB returned early) ***
