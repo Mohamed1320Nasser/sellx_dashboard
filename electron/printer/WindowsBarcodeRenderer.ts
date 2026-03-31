@@ -112,7 +112,8 @@ function generateBarcodeHTML(labelData: LabelData, config: PrinterConfig): strin
   <div class="price">${price.toFixed(2)}</div>
 
   <script>
-    window.addEventListener('load', function() {
+    // Execute immediately when script loads (not waiting for window.load)
+    (function() {
       try {
         console.log('Generating barcode for SKU: ${sku}');
         JsBarcode("#barcode", "${sku}", {
@@ -133,7 +134,7 @@ function generateBarcodeHTML(labelData: LabelData, config: PrinterConfig): strin
         console.error('Barcode generation error:', error);
         document.body.innerHTML = '<div style="padding: 5mm; color: red; font-size: 8px;">Error: ' + error.message + '<br>SKU: ${sku}<br>Format: ${barcodeFormat}</div>';
       }
-    });
+    })();
   </script>
 </body>
 </html>
