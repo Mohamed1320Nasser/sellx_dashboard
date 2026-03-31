@@ -66,9 +66,9 @@ const DEFAULT_CONFIG: PrinterConfig = {
   labelHeight: 30,
   labelFontSize: 12,
   barcodeFormat: 'CODE128',
-  barcodeHeight: 60,  // Improved from 40px for better scan range (12")
-  barcodeWidth: 2,    // Standard width (scannable and compact)
-  showBarcodeText: true,  // Show text below barcode (HRI)
+  barcodeHeight: 40,
+  barcodeWidth: 2,
+  showBarcodeText: true,
 
   // Content
   showLogo: true,

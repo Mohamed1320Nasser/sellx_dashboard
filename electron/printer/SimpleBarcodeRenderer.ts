@@ -135,14 +135,15 @@ export async function printBarcodeSimple(
  * Generate simple HTML with barcode
  */
 function generateLabelHTML(labelData: LabelData): string {
+  const safeSku = labelData.sku.toString().padStart(6, '0');
+
   const {
     productName,
-    sku,
-    price,
     labelWidth = 40,
     labelHeight = 30,
     barcodeFormat = 'CODE128',
-    labelFontSize = 12,
+    barcodeHeight = 40,
+    barcodeWidth = 2,
   } = labelData;
 
   return `
@@ -150,107 +151,51 @@ function generateLabelHTML(labelData: LabelData): string {
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Barcode Label</title>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
-    @page {
-      size: ${labelWidth}mm ${labelHeight}mm;
-      margin: 0;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    @page { size: ${labelWidth}mm ${labelHeight}mm; margin: 0; }
     body {
-      position: relative;
       width: ${labelWidth}mm;
       height: ${labelHeight}mm;
-      font-family: Arial, sans-serif;
-      background: white;
-      overflow: hidden;
-      print-color-adjust: exact;
-      -webkit-print-color-adjust: exact;
-    }
-
-    .product-name {
-      position: absolute;
-      top: 2mm;
-      left: 1mm;
-      right: 1mm;
-      text-align: center;
-      font-size: 8px;
-      font-weight: bold;
-      word-wrap: break-word;
-      line-height: 1.1;
-    }
-
-    .barcode-container {
-      position: absolute;
-      top: 8mm;
-      left: 0;
-      right: 0;
-      text-align: center;
+      margin: 0;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      font-family: sans-serif;
     }
-
+    .product-name {
+      font-size: 10px;
+      font-weight: bold;
+      margin-bottom: 2px;
+      text-align: center;
+    }
     #barcode {
-      width: 100%;
-      max-width: 100%;
-      height: auto;
+      max-width: 95%;
     }
   </style>
 </head>
 <body>
   <div class="product-name">${escapeHtml(productName)}</div>
-
-  <div class="barcode-container">
-    <svg id="barcode"></svg>
-  </div>
+  <svg id="barcode"></svg>
 
   <script>
-    (function() {
-      let attempts = 0;
-
-      function tryGenerate() {
-        attempts++;
-
-        if (typeof JsBarcode === 'undefined') {
-          if (attempts < 50) {
-            setTimeout(tryGenerate, 100);
-          } else {
-            console.error('JsBarcode failed to load');
-          }
-          return;
-        }
-
-        try {
-          JsBarcode("#barcode", "${sku}", {
-            format: "${barcodeFormat}",
-            width: 2,
-            height: 50,
-            displayValue: true,
-            fontSize: 10,
-            margin: 5,
-            background: "#ffffff",
-            lineColor: "#000000"
-          });
-          console.log('✅ Barcode generated');
-        } catch (error) {
-          console.error('Barcode error:', error);
-        }
-      }
-
-      tryGenerate();
-    })();
+    window.onload = function() {
+      try {
+        JsBarcode("#barcode", "${safeSku}", {
+          format: "${barcodeFormat}",
+          width: ${barcodeWidth},
+          height: ${barcodeHeight},
+          displayValue: true,
+          fontSize: 12,
+          margin: 0,
+          flat: true
+        });
+      } catch (e) { console.error(e); }
+    };
   </script>
 </body>
-</html>
-  `.trim();
+</html>`.trim();
 }
 
 /**
