@@ -177,11 +177,11 @@ function generateLabelHTML(labelData: LabelData): string {
 
     .product-name {
       position: absolute;
-      top: 1mm;
-      left: 0.5mm;
-      right: 0.5mm;
+      top: 2mm;
+      left: 1mm;
+      right: 1mm;
       text-align: center;
-      font-size: 9px;
+      font-size: 8px;
       font-weight: bold;
       word-wrap: break-word;
       line-height: 1.1;
@@ -189,7 +189,7 @@ function generateLabelHTML(labelData: LabelData): string {
 
     .barcode-container {
       position: absolute;
-      top: 6mm;
+      top: 8mm;
       left: 0;
       right: 0;
       text-align: center;
@@ -232,10 +232,10 @@ function generateLabelHTML(labelData: LabelData): string {
           JsBarcode("#barcode", "${sku}", {
             format: "${barcodeFormat}",
             width: 2,
-            height: 100,
+            height: 50,
             displayValue: true,
-            fontSize: 14,
-            margin: 10,
+            fontSize: 10,
+            margin: 5,
             background: "#ffffff",
             lineColor: "#000000"
           });

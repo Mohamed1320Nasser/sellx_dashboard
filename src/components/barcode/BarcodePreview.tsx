@@ -35,16 +35,14 @@ export interface BarcodePreviewProps {
   onError?: (error: string) => void;
 }
 
-// Default settings optimized for CODE128 scannability
-// Based on professional barcode scanning recommendations
 const DEFAULTS = {
-  labelWidth: 35,           // 1.36 inch
-  labelHeight: 25,          // 0.98 inch
-  barcodeHeight: 100,       // 100px - tall for angle scanning
-  barcodeWidth: 2,          // Width 2 = standard thickness
+  labelWidth: 35,
+  labelHeight: 25,
+  barcodeHeight: 50,
+  barcodeWidth: 2,
   barcodeFormat: 'CODE128' as const,
   showBarcodeText: true,
-  fontSize: 14,             // 14px - clear text
+  fontSize: 10,
   companyName: 'SellX',
 };
 
@@ -87,7 +85,7 @@ export function BarcodePreview({
           height: barcodeHeight,
           displayValue: showBarcodeText,
           fontSize: fontSize,
-          margin: 10,                   // Quiet zone for scanners
+          margin: 5,
           background: '#ffffff',
           lineColor: '#000000',
         });
