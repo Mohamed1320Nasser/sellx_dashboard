@@ -1,0 +1,227 @@
+{
+  "name": "sellx-pos",
+  "private": true,
+  "version": "1.0.0",
+  "description": "SellX - Professional Point of Sale System for Retail & Business Management",
+  "author": {
+    "name": "SellX Team",
+    "email": "support@sellx.morita.vip"
+  },
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "dist/main.js",
+  "homepage": "./",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sellx/sellx-pos"
+  },
+  "scripts": {
+    "dev": "vite",
+    "dev:desktop": "tsc -p tsconfig.electron.json && echo '{\"type\":\"commonjs\"}' > dist/package.json && VITE_TARGET=desktop concurrently \"npm run dev\" \"wait-on tcp:5173 -t 30000 || wait-on tcp:5174 -t 5000 && electron .\"",
+    "build": "tsc -b && vite build",
+    "build:web": "VITE_TARGET=web NODE_ENV=production tsc -b && vite build --mode production",
+    "build:electron": "export VITE_TARGET=desktop && export NODE_ENV=production && tsc -b && vite build --mode production && tsc -p tsconfig.electron.json && node scripts/post-build-electron.cjs",
+    "build:prod": "npm run clean && npm run build:electron",
+    "build:win": "npm run build:prod && electron-builder --win --x64",
+    "build:mac": "npm run build:prod && electron-builder --mac",
+    "build:linux": "npm run build:prod && electron-builder --linux",
+    "build:all": "npm run build:prod && electron-builder --win --mac --linux",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "electron": "electron .",
+    "clean": "rimraf dist dist-web dist-installer build",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.8",
+    "@hookform/resolvers": "^5.2.1",
+    "@point-of-sale/receipt-printer-encoder": "^3.0.3",
+    "@tanstack/react-query": "^5.87.4",
+    "@tanstack/react-table": "^8.21.3",
+    "axios": "^1.12.1",
+    "chart.js": "^4.5.0",
+    "date-fns": "^4.1.0",
+    "electron-pos-printer": "^1.3.8",
+    "escpos": "^3.0.0-alpha.6",
+    "escpos-network": "^3.0.0-alpha.5",
+    "escpos-usb": "^3.0.0-alpha.4",
+    "framer-motion": "^12.23.12",
+    "html-to-image": "^1.11.13",
+    "html2canvas": "^1.4.1",
+    "jsbarcode": "^3.12.3",
+    "jspdf": "^3.0.2",
+    "jspdf-autotable": "^5.0.2",
+    "lucide-react": "^0.544.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.1.1",
+    "react-chartjs-2": "^5.3.0",
+    "react-countup": "^6.5.3",
+    "react-dom": "^19.1.1",
+    "react-dropzone": "^14.3.8",
+    "react-hook-form": "^7.62.0",
+    "react-hot-toast": "^2.6.0",
+    "react-pdf": "^10.1.0",
+    "react-router-dom": "^6.30.1",
+    "recharts": "^3.6.0",
+    "sharp": "^0.34.5",
+    "zod": "^4.1.8",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^3.7.2",
+    "@eslint/js": "^9.33.0",
+    "@tanstack/react-query-devtools": "^5.87.4",
+    "@types/node": "^24.3.1",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@types/react-pdf": "^7.0.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.1.0",
+    "electron": "^32.0.0",
+    "electron-builder": "^25.1.8",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "husky": "^9.1.7",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "tailwindcss": "^3.4.17",
+    "terser": "^5.46.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.39.1",
+    "vite": "^5.4.20",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "com.sellx.pos",
+    "productName": "SellX POS",
+    "executableName": "SellX POS",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "copyright": "Copyright 2024 SellX Team",
+    "directories": {
+      "output": "dist-installer",
+      "buildResources": "build-resources"
+    },
+    "files": [
+      "dist/**/*",
+      "!dist/test-*.js",
+      "!dist/test-*.js.map",
+      "!dist/**/*.map",
+      "node_modules/**/*",
+      "!node_modules/.bin",
+      "!node_modules/*/{test,tests,__tests__}/**",
+      "!node_modules/*/{docs,doc,documentation}/**",
+      "!node_modules/*/{examples,example}/**",
+      "!node_modules/**/*.{md,markdown,ts,tsx}",
+      "!node_modules/**/LICENSE*",
+      "!node_modules/**/CHANGELOG*",
+      "!node_modules/**/README*",
+      "!node_modules/@types/**",
+      "!node_modules/typescript/**",
+      "!node_modules/eslint/**",
+      "!node_modules/prettier/**",
+      "!node_modules/@eslint/**",
+      "!node_modules/@tanstack/react-query-devtools/**",
+      "!node_modules/@electron/rebuild/**",
+      "!node_modules/vite/**",
+      "!node_modules/@vitejs/**"
+    ],
+    "extraMetadata": {
+      "main": "dist/main.js"
+    },
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/electron-pos-printer/**/*",
+      "node_modules/electron-store/**/*"
+    ],
+    "npmRebuild": true,
+    "compression": "maximum",
+    "removePackageScripts": true,
+    "forceCodeSigning": false,
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "public/icon.ico",
+      "publisherName": "SellX Team",
+      "legalTrademarks": "SellX POS",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "public/icon.icns",
+      "category": "public.app-category.business",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "identity": null,
+      "type": "distribution",
+      "darkModeSupport": true,
+      "minimumSystemVersion": "10.15"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icons",
+      "category": "Office",
+      "executableName": "sellx-pos",
+      "maintainer": "SellX Team <support@sellx.morita.vip>"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "SellX POS",
+      "installerIcon": "public/icon.ico",
+      "uninstallerIcon": "public/icon.ico",
+      "installerHeaderIcon": "public/icon.ico",
+      "deleteAppDataOnUninstall": true,
+      "runAfterFinish": true,
+      "menuCategory": "SellX",
+      "perMachine": false,
+      "allowElevation": true,
+      "installerSidebar": null,
+      "uninstallerSidebar": null,
+      "include": null,
+      "script": null,
+      "guid": "com.sellx.pos"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 540,
+        "height": 400
+      }
+    },
+    "publish": null
+  }
+}
