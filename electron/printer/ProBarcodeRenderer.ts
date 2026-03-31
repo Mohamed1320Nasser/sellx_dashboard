@@ -103,38 +103,32 @@ export async function printBarcodeProfessional(
     );
     console.log('✅ Barcode generated as SVG data URI');
 
-    // Prepare print data for electron-pos-printer
-    const printData = [
-      // Product name
+    // Create complete HTML for the label
+    const labelHTML = `
+      <div style="text-align: center; font-family: Arial, sans-serif; padding: 2mm;">
+        <div style="font-weight: bold; font-size: ${labelData.labelFontSize || 12}px; margin-bottom: 2mm;">
+          ${labelData.productName}
+        </div>
+        <div style="margin: 2mm 0;">
+          <img src="${barcodeDataUri}" style="width: 35mm; height: auto;" />
+        </div>
+        <div style="font-weight: bold; font-size: 10px; margin-top: 2mm;">
+          ${labelData.price.toFixed(2)} ج.م
+        </div>
+      </div>
+    `;
+
+    // Use electron-pos-printer with simpler data structure
+    const printData: any[] = [
       {
         type: 'text',
-        value: `<div style="text-align: center; font-weight: bold; font-size: ${labelData.labelFontSize || 12}px; margin-bottom: 2mm;">${labelData.productName}</div>`,
-        style: 'text-align: center;',
-        raw: true,
-      },
-      // Barcode image
-      {
-        type: 'image',
-        src: barcodeDataUri,
-        style: {
-          width: '35mm',
-          height: 'auto',
-        },
-        attributes: {
-          style: 'display: block; margin: 0 auto;'
-        }
-      },
-      // Price
-      {
-        type: 'text',
-        value: `<div style="text-align: center; font-weight: bold; font-size: 10px; margin-top: 2mm;">${labelData.price.toFixed(2)} ج.م</div>`,
-        style: 'text-align: center;',
-        raw: true,
-      },
+        value: labelHTML,
+        css: { 'text-align': 'center' },
+      }
     ];
 
     // Print options
-    const options = {
+    const options: any = {
       printerName: printerName,
       silent: true,
       copies: config.printCopies || 1,
