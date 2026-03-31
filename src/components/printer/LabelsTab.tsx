@@ -37,17 +37,40 @@ export const LabelsTab: React.FC = () => {
     try {
       toast.loading('جاري طباعة الملصق التجريبي...', { id: 'test-label' });
 
-      const result = await window.printerAPI.printLabel({
-        productName: 'منتج تجريبي - Test Product',
-        sku: 'TEST123456',
-        price: 99.99,
-        labelWidth: config.labelWidth,
-        labelHeight: config.labelHeight,
-        labelFontSize: config.labelFontSize,
-        barcodeFormat: config.barcodeFormat,
-        barcodeHeight: config.barcodeHeight,
-        barcodeWidth: config.barcodeWidth,
-      });
+      // Pass complete printer config (not just label data)
+      const printerConfig = {
+        printerName: config.printerName,
+        connectionType: config.connectionType,
+        ipAddress: config.ipAddress,
+        port: config.port,
+        paperWidth: config.paperWidth,
+        marginTop: config.marginTop,
+        marginBottom: config.marginBottom,
+        showLogo: config.showLogo,
+        showOrderId: config.showOrderId,
+        showTaxBreakdown: config.showTaxBreakdown,
+        showQRCode: config.showQRCode,
+        headerText: config.headerText || '',
+        footerText: config.footerText || '',
+        characterSet: 'windows-1256',
+        cutPaper: config.cutPaper,
+        printCopies: config.printCopies || 1,
+      };
+
+      const result = await window.printerAPI.printLabel(
+        {
+          productName: 'منتج تجريبي - Test Product',
+          sku: 'TEST123456',
+          price: 99.99,
+          labelWidth: config.labelWidth,
+          labelHeight: config.labelHeight,
+          labelFontSize: config.labelFontSize,
+          barcodeFormat: config.barcodeFormat,
+          barcodeHeight: config.barcodeHeight,
+          barcodeWidth: config.barcodeWidth,
+        },
+        printerConfig
+      );
 
       if (result.success) {
         toast.success('✅ تم طباعة الملصق التجريبي بنجاح', { id: 'test-label' });

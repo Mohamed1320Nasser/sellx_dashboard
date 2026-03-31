@@ -181,28 +181,14 @@ const Products: React.FC = () => {
   }, []);
 
   const handlePrintBarcode = async (product: Product) => {
-    // TEMPORARY: Alert to confirm new code is running
-    alert('🔴 NEW CODE RUNNING! Check console now!');
-
-    console.log('');
-    console.log('═══════════════════════════════════════════');
-    console.log('🔵 PRODUCTS PAGE: Print Barcode Button Clicked');
-    console.log('═══════════════════════════════════════════');
-    console.log('Product:', product.name);
-    console.log('SKU:', product.sku);
-    console.log('Time:', new Date().toISOString());
-
     if (!product.sku) {
-      console.error('❌ No SKU found for product');
       toast.error("لا يوجد رمز SKU لهذا المنتج");
       return;
     }
 
-    // Show loading toast
     const loadingToast = toast.loading('جاري طباعة الباركود...');
 
     try {
-      console.log('📞 Calling printBarcode()...');
       await printBarcode({
         sku: product.sku,
         productName: product.name,
@@ -210,17 +196,8 @@ const Products: React.FC = () => {
         quantity: 1
       });
 
-      console.log('✅ printBarcode() completed successfully');
       toast.success('تم طباعة الباركود بنجاح', { id: loadingToast });
     } catch (error: any) {
-      console.log('');
-      console.error('❌ PRODUCTS PAGE: Print failed');
-      console.error('Error:', error);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-      console.log('═══════════════════════════════════════════');
-
-      // Show the actual error message from the printer
       const errorMessage = error.message || 'فشلت طباعة الباركود';
       toast.error(errorMessage, { id: loadingToast });
     }

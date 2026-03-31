@@ -108,35 +108,11 @@ export const printReceipt = async (options: PrintReceiptOptions): Promise<void> 
 export const printBarcode = async (options: PrintBarcodeOptions): Promise<void> => {
   const { sku, productName, price, quantity = 1 } = options;
 
-  // Debug logging
-  console.log('🖨️ [printBarcode] Starting print request');
-  console.log('🖨️ [printBarcode] Options:', { sku, productName, price, quantity });
-  console.log('🖨️ [printBarcode] Checking Electron environment...');
-  console.log('🖨️ [printBarcode] window.isElectron:', typeof window !== 'undefined' ? window.isElectron : 'N/A');
-  console.log('🖨️ [printBarcode] window.printerAPI:', typeof window !== 'undefined' ? !!window.printerAPI : 'N/A');
-  console.log('🖨️ [printBarcode] electronPrinter.isElectron():', electronPrinter.isElectron());
-
   // Try Electron printer first
   if (electronPrinter.isElectron()) {
-    console.log('✅ [printBarcode] Electron detected! Using thermal printer...');
     try {
       // Get printer config from store
       const printerConfig = usePrinterConfigStore.getState();
-
-      console.log('📋 [printBarcode] Printer config from store:', {
-        printerName: printerConfig.printerName,
-        connectionType: printerConfig.connectionType,
-        ipAddress: printerConfig.ipAddress,
-        port: printerConfig.port,
-        isLoading: printerConfig.isLoading,
-        error: printerConfig.error,
-      });
-
-      // Check if config is loaded
-      if (!printerConfig.printerName && !printerConfig.ipAddress) {
-        console.warn('⚠️ [printBarcode] Printer config seems empty!');
-        console.warn('   Did you save printer settings?');
-      }
 
       const labelData = {
         productName,
@@ -167,24 +143,18 @@ export const printBarcode = async (options: PrintBarcodeOptions): Promise<void> 
         footerText: printerConfig.footerText || '',
         characterSet: 'windows-1256',
         cutPaper: printerConfig.cutPaper,
+        printCopies: printerConfig.printCopies || 1,
       };
 
-      console.log('🖨️ [printBarcode] Calling electronPrinter.printLabel with:', labelData);
-      console.log('🖨️ [printBarcode] Printer config:', electronConfig);
       const result = await electronPrinter.printLabel(labelData, electronConfig);
-      console.log('🖨️ [printBarcode] Print result:', result);
 
       if (!result.success) {
-        // Show clear error message - DON'T fall back to browser in Electron
         const errorMessage = result.error || 'فشلت طباعة الباركود';
-        console.error('❌ [printBarcode] Print failed:', errorMessage);
         throw new Error(errorMessage);
       }
 
-      console.log('✅ [printBarcode] Print successful!');
       return;
     } catch (error: any) {
-      console.error('❌ [printBarcode] Electron label print failed:', error);
       // In Electron: throw error to show to user (don't fall back to browser)
       throw error;
     }
@@ -193,7 +163,6 @@ export const printBarcode = async (options: PrintBarcodeOptions): Promise<void> 
   // ========================================
   // BROWSER FALLBACK (for web version only)
   // ========================================
-  console.log('⚠️ [printBarcode] Electron NOT detected. Using browser fallback...');
 
   // Fallback to browser printing
   const printWindow = window.open('', '_blank', 'width=800,height=600');

@@ -55,18 +55,27 @@ export default function PrinterSettings() {
   };
 
   const handleTestPrint = async () => {
+    // Check if printer is configured
+    if (!config.printerName && config.connectionType === 'USB') {
+      toast.error('⚠️ يرجى حفظ إعدادات الطابعة أولاً قبل الطباعة التجريبية');
+      return;
+    }
+
+    if (config.connectionType === 'LAN' && (!config.ipAddress || !config.port)) {
+      toast.error('⚠️ يرجى تكوين عنوان IP والمنفذ وحفظ الإعدادات أولاً');
+      return;
+    }
+
     try {
-      toast.loading('جاري طباعة ملصق تجريبي...');
+      const loadingToast = toast.loading('جاري طباعة ملصق تجريبي...');
       await printBarcode({
         sku: 'TEST-12345',
         productName: 'منتج تجريبي / Test Product',
         price: 99.99,
         quantity: 1,
       });
-      toast.dismiss();
-      toast.success('✓ تم إرسال الملصق التجريبي للطباعة');
+      toast.success('✓ تم إرسال الملصق التجريبي للطباعة', { id: loadingToast });
     } catch (error: any) {
-      toast.dismiss();
       toast.error(error.message || 'فشلت الطباعة التجريبية');
       console.error('Test print error:', error);
     }
