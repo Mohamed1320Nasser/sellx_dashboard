@@ -169,7 +169,7 @@ function generateLabelHTML(labelData: LabelData): string {
       height: ${labelHeight}mm;
       font-family: Arial, sans-serif;
       text-align: center;
-      padding: 2mm;
+      padding: 0.5mm;
       background: white;
       display: flex;
       flex-direction: column;
@@ -178,31 +178,26 @@ function generateLabelHTML(labelData: LabelData): string {
     }
 
     .product-name {
-      font-size: ${labelFontSize}px;
+      font-size: 8px;
       font-weight: bold;
-      margin-bottom: 1mm;
+      margin-bottom: 0.2mm;
       word-wrap: break-word;
       max-width: 100%;
-      line-height: 1.2;
+      line-height: 1.1;
     }
 
     .barcode-container {
-      margin: 1mm 0;
-      flex: 1;
+      margin: 0;
+      width: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
     #barcode {
-      max-width: 95%;
+      width: 100%;
+      max-width: 100%;
       height: auto;
-    }
-
-    .price {
-      font-size: 10px;
-      font-weight: bold;
-      margin-top: 1mm;
     }
   </style>
 </head>
@@ -212,8 +207,6 @@ function generateLabelHTML(labelData: LabelData): string {
   <div class="barcode-container">
     <svg id="barcode"></svg>
   </div>
-
-  <div class="price">${price.toFixed(2)} ج.م</div>
 
   <script>
     (function() {
@@ -234,13 +227,16 @@ function generateLabelHTML(labelData: LabelData): string {
         try {
           JsBarcode("#barcode", "${sku}", {
             format: "${barcodeFormat}",
-            width: 2,
-            height: 60,
+            width: 2.5,
+            height: 50,
             displayValue: true,
-            fontSize: 14,
-            margin: 10,
+            fontSize: 10,
+            margin: 0,
             background: "#ffffff",
-            lineColor: "#000000"
+            lineColor: "#000000",
+            textMargin: 0,
+            font: "monospace",
+            fontOptions: "bold"
           });
           console.log('✅ Barcode generated');
         } catch (error) {
