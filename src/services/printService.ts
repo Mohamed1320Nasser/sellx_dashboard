@@ -67,10 +67,75 @@ export const printReceipt = async (options: PrintReceiptOptions): Promise<void> 
   // Try Electron printer first
   if (electronPrinter.isElectron()) {
     try {
-      // Always use image mode for best Arabic RTL support
-      console.log('📄 Using HTML-to-Image print mode (always)');
-      await printReceiptAsImage({ sale, company, cashier });
-      return;
+      // Get printer config to check connection type
+      const printerConfig = usePrinterConfigStore.getState();
+
+      // USB: Use direct Electron print (simple method - same as barcodes)
+      // LAN: Use HTML-to-Image mode (for ESC/POS compatibility)
+      if (printerConfig.connectionType === 'USB') {
+        console.log('📄 USB mode: Using direct Electron print (simple method)');
+
+        // Prepare receipt data for direct printing
+        const receiptData = {
+          id: sale.id,
+          receiptNumber: sale.receiptNumber || sale.id,
+          createdAt: sale.createdAt || sale.saleDate || new Date(),
+          subtotal: sale.subtotal || 0,
+          discountAmount: sale.discountAmount || 0,
+          taxRate: sale.taxRate || 0,
+          taxAmount: sale.taxAmount || 0,
+          total: sale.totalAmount || sale.total || 0,
+          paidAmount: sale.paidAmount || 0,
+          items: (sale.items || []).map((item: any) => ({
+            productName: item.productName || item.product?.name || 'Item',
+            quantity: item.quantity || 1,
+            unitPrice: item.unitPrice || item.price || 0,
+            totalPrice: item.totalPrice || item.total || (item.quantity * (item.unitPrice || 0)),
+          })),
+          company: {
+            name: company?.name || company?.company?.name || 'Store',
+            address: company?.address || company?.company?.address,
+            phone: company?.phone || company?.company?.phone,
+            taxNumber: company?.taxNumber || company?.taxId || company?.company?.taxNumber,
+          },
+          cashier: {
+            name: cashier?.fullname || cashier?.name || cashier?.username || 'Cashier',
+          },
+        };
+
+        const config = {
+          printerName: printerConfig.printerName,
+          connectionType: printerConfig.connectionType,
+          ipAddress: printerConfig.ipAddress,
+          port: printerConfig.port,
+          paperWidth: printerConfig.paperWidth,
+          marginTop: printerConfig.marginTop,
+          marginBottom: printerConfig.marginBottom,
+          showLogo: printerConfig.showLogo,
+          showOrderId: printerConfig.showOrderId,
+          showTaxBreakdown: printerConfig.showTaxBreakdown,
+          showQRCode: printerConfig.showQRCode,
+          headerText: printerConfig.headerText || '',
+          footerText: printerConfig.footerText || 'شكراً لزيارتكم',
+          characterSet: 'windows-1256',
+          cutPaper: printerConfig.cutPaper,
+          printCopies: printerConfig.printCopies || 1,
+        };
+
+        // Call Electron printer API directly
+        const result = await electronPrinter.printReceipt(receiptData, config);
+        if (!result.success) {
+          throw new Error(result.error || 'فشلت الطباعة');
+        }
+        return;
+
+      } else {
+        // LAN: Use HTML-to-Image mode for better ESC/POS compatibility
+        console.log('📄 LAN mode: Using HTML-to-Image print mode');
+        await printReceiptAsImage({ sale, company, cashier });
+        return;
+      }
+
     } catch (error) {
       console.error('Electron print failed, falling back to browser print:', error);
       // Fall through to browser printing

@@ -1,6 +1,7 @@
 import { PrinterConfig, ReceiptData, LabelData, PrintResult } from './types';
 import { PrinterError, PrinterErrorCode, classifyPrinterError } from './errors';
 import { printBarcodeSimple } from './SimpleBarcodeRenderer';
+import { printReceiptSimple } from './SimpleReceiptRenderer';
 import escpos from 'escpos';
 // @ts-ignore - escpos-network doesn't have types
 import Network from 'escpos-network';
@@ -58,7 +59,7 @@ export class PrinterManager {
         console.log('📡 IP Address:', printerConfig.ipAddress);
         console.log('🔧 Port:', printerConfig.port);
       } else {
-        console.log('🔌 USB Mode - Driver required on Windows');
+        console.log('🔌 USB Mode - Using Electron Native Print');
       }
 
       console.log('📋 Receipt Details:');
@@ -68,6 +69,45 @@ export class PrinterManager {
       console.log('   Total Amount:', receiptData.total);
       console.log('   Print Copies:', printerConfig.printCopies || 1);
       console.log('═════════════════════════════════════════════');
+
+      // *** USB Mode: Use SIMPLE Electron Native Printing ***
+      // Same method as barcode printing - works with ALL printers
+      if (printerConfig.connectionType === 'USB') {
+        console.log('');
+        console.log('✨ USB mode - Using simple Electron print (same as barcodes)');
+        console.log('');
+
+        // Convert ReceiptData to SimpleReceiptRenderer format
+        const simpleReceiptData = {
+          orderId: receiptData.id,
+          orderDate: receiptData.createdAt,
+          companyName: receiptData.company?.name || 'متجر',
+          companyAddress: receiptData.company?.address,
+          companyPhone: receiptData.company?.phone,
+          companyTaxId: receiptData.company?.taxNumber,
+          cashierName: receiptData.cashier?.name,
+          items: receiptData.items.map(item => ({
+            name: item.productName,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            totalPrice: item.totalPrice || (item.quantity * item.unitPrice),
+          })),
+          subtotal: receiptData.subtotal,
+          discount: receiptData.discountAmount,
+          taxRate: receiptData.taxRate,
+          taxAmount: receiptData.taxAmount,
+          additionalFee: 0,
+          additionalFeeLabel: '',
+          total: receiptData.total,
+          paid: receiptData.paidAmount,
+          change: (receiptData.paidAmount || 0) - receiptData.total,
+        };
+
+        return printReceiptSimple(simpleReceiptData, printerConfig);
+      }
+
+      // *** ONLY LAN MODE REACHES HERE (USB returned early) ***
+      console.log('');
 
       // Create device based on connection type
       let device: any;
@@ -296,8 +336,12 @@ export class PrinterManager {
 
   /**
    * Print an image (PNG/JPEG) to the thermal printer
-   * LAN: Uses ESC/POS
-   * USB (Windows): Uses Windows Spooler (electron-pos-printer)
+   *
+   * NOTE: This is a LEGACY method kept for backward compatibility.
+   * USB receipts now use printReceiptSimple() instead (Electron native print).
+   * This method is still used for:
+   * - LAN image printing (ESC/POS)
+   * - Legacy HTML-to-Image receipt mode (if enabled)
    */
   async printImage(imageBuffer: Buffer, config?: PrinterConfig): Promise<PrintResult> {
     const printerConfig = config || this.config;
