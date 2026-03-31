@@ -231,16 +231,13 @@ function generateLabelHTML(labelData: LabelData): string {
         try {
           JsBarcode("#barcode", "${sku}", {
             format: "${barcodeFormat}",
-            width: 3,
-            height: 70,
+            width: 2,
+            height: 100,
             displayValue: true,
-            fontSize: 11,
-            margin: 2,
+            fontSize: 14,
+            margin: 10,
             background: "#ffffff",
-            lineColor: "#000000",
-            textMargin: 1,
-            font: "monospace",
-            fontOptions: "bold"
+            lineColor: "#000000"
           });
           console.log('✅ Barcode generated');
         } catch (error) {

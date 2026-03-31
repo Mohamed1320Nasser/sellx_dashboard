@@ -35,17 +35,16 @@ export interface BarcodePreviewProps {
   onError?: (error: string) => void;
 }
 
-// Default settings optimized for 35x25mm labels (1.36" x 0.98")
-// These match SimpleBarcodeRenderer.ts settings
-// OPTIMIZED: Maximum scannability
+// Default settings optimized for CODE128 scannability
+// Based on professional barcode scanning recommendations
 const DEFAULTS = {
   labelWidth: 35,           // 1.36 inch
   labelHeight: 25,          // 0.98 inch
-  barcodeHeight: 70,        // 70px - tall for better scanning
-  barcodeWidth: 3,          // Width 3 = thick bars for clarity
+  barcodeHeight: 100,       // 100px - tall for angle scanning
+  barcodeWidth: 2,          // Width 2 = standard thickness
   barcodeFormat: 'CODE128' as const,
   showBarcodeText: true,
-  fontSize: 11,             // 11px - readable SKU text
+  fontSize: 14,             // 14px - clear text
   companyName: 'SellX',
 };
 
@@ -84,16 +83,13 @@ export function BarcodePreview({
         // - fontSize: 9px = readable on thermal printers
         JsBarcode(svgRef.current, barcode, {
           format: barcodeFormat,
-          width: barcodeWidth,          // Use exact value - no override
-          height: barcodeHeight,        // Use exact value - no override
+          width: barcodeWidth,
+          height: barcodeHeight,
           displayValue: showBarcodeText,
-          fontSize: fontSize,           // Use exact value - no override
-          margin: 2,                    // Small margin for quiet zones
+          fontSize: fontSize,
+          margin: 10,                   // Quiet zone for scanners
           background: '#ffffff',
           lineColor: '#000000',
-          textMargin: 1,                // Small text margin
-          font: 'monospace',
-          fontOptions: 'bold',
         });
       } catch (e: any) {
         const errorMessage = e?.message || 'Failed to generate barcode';
