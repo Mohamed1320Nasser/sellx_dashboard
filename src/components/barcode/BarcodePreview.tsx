@@ -37,15 +37,15 @@ export interface BarcodePreviewProps {
 
 // Default settings optimized for 35x25mm labels (1.36" x 0.98")
 // These match FALLBACK_SETTINGS in useLabelSettings.ts
-// UPDATED: Increased barcode height from 40px to 60px for better scannability
+// OPTIMIZED: Better quality for small labels
 const DEFAULTS = {
   labelWidth: 35,           // 1.36 inch
   labelHeight: 25,          // 0.98 inch
-  barcodeHeight: 60,        // 60px - improved scannability at 12" distance
-  barcodeWidth: 2,          // Width 2 = compact but scannable
+  barcodeHeight: 50,        // 50px - good balance for 25mm height
+  barcodeWidth: 2.5,        // Width 2.5 = better clarity than 2
   barcodeFormat: 'CODE128' as const,
   showBarcodeText: true,
-  fontSize: 9,              // 9px - compact but readable
+  fontSize: 8,              // 8px - slightly smaller for compact labels
   companyName: 'SellX',
 };
 
@@ -88,10 +88,10 @@ export function BarcodePreview({
           height: barcodeHeight,        // Use exact value - no override
           displayValue: showBarcodeText,
           fontSize: fontSize,           // Use exact value - no override
-          margin: 2,                    // Smaller margin for compact labels
+          margin: 0,                    // NO margin - maximize barcode width
           background: '#ffffff',
           lineColor: '#000000',
-          textMargin: 1,                // Reduced text margin for compact layout
+          textMargin: 0,                // NO text margin - compact layout
           font: 'monospace',
           fontOptions: 'bold',
         });
@@ -118,7 +118,7 @@ export function BarcodePreview({
       style={{
         width: `${displayWidth}mm`,
         height: `${displayHeight}mm`,
-        padding: `${1 * scale}mm`,
+        padding: `${0.5 * scale}mm`, // Reduced padding from 1mm to 0.5mm
       }}
     >
       {error ? (
@@ -133,34 +133,32 @@ export function BarcodePreview({
         </div>
       ) : (
         <>
-          {/* Product Name */}
+          {/* Product Name - REDUCED MARGIN */}
           {productName && (
             <div
               className="font-bold text-center truncate w-full"
-              style={{ fontSize: `${fontSize * scale}px`, marginBottom: `${0.5 * scale}mm` }}
+              style={{
+                fontSize: `${fontSize * scale}px`,
+                marginBottom: `${0.2 * scale}mm`, // Reduced from 0.5mm to 0.2mm
+                paddingLeft: 0,
+                paddingRight: 0
+              }}
             >
               {productName}
             </div>
           )}
 
-          {/* Barcode */}
+          {/* Barcode - CENTERED, NO SIDE MARGINS */}
           <svg
             ref={svgRef}
             style={{
-              maxWidth: `${(labelWidth - 4) * scale}mm`,
+              width: '100%', // Full width for proper centering
+              maxWidth: `${(labelWidth - 1) * scale}mm`, // Reduced margin from 4mm to 1mm
               height: 'auto',
             }}
           />
 
-          {/* Price */}
-          {price !== undefined && (
-            <div
-              className="font-bold text-center w-full"
-              style={{ fontSize: `${10 * scale}px`, marginTop: `${0.5 * scale}mm` }}
-            >
-              {price.toFixed(2)} ج.م
-            </div>
-          )}
+          {/* Price - REMOVED (not needed) */}
         </>
       )}
     </div>

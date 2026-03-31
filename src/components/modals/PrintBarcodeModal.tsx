@@ -89,7 +89,6 @@ export function PrintBarcodeModal({
             <BarcodePreview
               barcode={product.sku}
               productName={product.name}
-              price={product.price}
               labelWidth={printerConfig.labelWidth}
               labelHeight={printerConfig.labelHeight}
               barcodeFormat={printerConfig.barcodeFormat}

@@ -261,8 +261,8 @@ const ProductCreate: React.FC = () => {
                     </button>
                   </div>
 
-                  {/* Barcode Preview - shows when product has name and price */}
-                  {formData.name && formData.sellingPrice && (
+                  {/* Barcode Preview - shows when product has name */}
+                  {formData.name && formData.barcode && (
                     <div className="bg-white rounded-lg border-2 border-gray-200 p-4">
                       <h4 className="text-sm font-semibold text-gray-700 mb-3 text-center">
                         معاينة الباركود (سيتم طباعته كما هو)
@@ -271,7 +271,6 @@ const ProductCreate: React.FC = () => {
                         <BarcodePreview
                           barcode={formData.barcode}
                           productName={formData.name}
-                          price={parseFloat(formData.sellingPrice) || 0}
                           labelWidth={printerConfig.labelWidth}
                           labelHeight={printerConfig.labelHeight}
                           barcodeFormat={printerConfig.barcodeFormat}
