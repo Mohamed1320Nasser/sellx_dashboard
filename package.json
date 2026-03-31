@@ -18,6 +18,7 @@
   "scripts": {
     "dev": "vite",
     "dev:desktop": "tsc -p tsconfig.electron.json && echo '{\"type\":\"commonjs\"}' > dist/package.json && VITE_TARGET=desktop concurrently \"npm run dev\" \"wait-on tcp:5173 -t 30000 || wait-on tcp:5174 -t 5000 && electron .\"",
+    "dev:desktop:win": "tsc -p tsconfig.electron.json && echo {\"type\":\"commonjs\"} > dist/package.json && set VITE_TARGET=desktop&& concurrently \"npm run dev\" \"wait-on tcp:5173 -t 30000 && electron .\"",
     "build": "tsc -b && vite build",
     "build:web": "VITE_TARGET=web NODE_ENV=production tsc -b && vite build --mode production",
     "build:electron": "export VITE_TARGET=desktop && export NODE_ENV=production && tsc -b && vite build --mode production && tsc -p tsconfig.electron.json && node scripts/post-build-electron.cjs",
