@@ -36,16 +36,16 @@ export interface BarcodePreviewProps {
 }
 
 // Default settings optimized for 35x25mm labels (1.36" x 0.98")
-// These match FALLBACK_SETTINGS in useLabelSettings.ts
-// OPTIMIZED: Better quality for small labels
+// These match SimpleBarcodeRenderer.ts settings
+// OPTIMIZED: Maximum scannability
 const DEFAULTS = {
   labelWidth: 35,           // 1.36 inch
   labelHeight: 25,          // 0.98 inch
-  barcodeHeight: 50,        // 50px - good balance for 25mm height
-  barcodeWidth: 2.5,        // Width 2.5 = better clarity than 2
+  barcodeHeight: 70,        // 70px - tall for better scanning
+  barcodeWidth: 3,          // Width 3 = thick bars for clarity
   barcodeFormat: 'CODE128' as const,
   showBarcodeText: true,
-  fontSize: 8,              // 8px - slightly smaller for compact labels
+  fontSize: 11,             // 11px - readable SKU text
   companyName: 'SellX',
 };
 
@@ -88,10 +88,10 @@ export function BarcodePreview({
           height: barcodeHeight,        // Use exact value - no override
           displayValue: showBarcodeText,
           fontSize: fontSize,           // Use exact value - no override
-          margin: 0,                    // NO margin - maximize barcode width
+          margin: 2,                    // Small margin for quiet zones
           background: '#ffffff',
           lineColor: '#000000',
-          textMargin: 0,                // NO text margin - compact layout
+          textMargin: 1,                // Small text margin
           font: 'monospace',
           fontOptions: 'bold',
         });

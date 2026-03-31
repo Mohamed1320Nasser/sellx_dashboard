@@ -165,30 +165,34 @@ function generateLabelHTML(labelData: LabelData): string {
     }
 
     body {
+      position: relative;
       width: ${labelWidth}mm;
       height: ${labelHeight}mm;
       font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 0.5mm;
       background: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      overflow: hidden;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
     }
 
     .product-name {
-      font-size: 8px;
+      position: absolute;
+      top: 1mm;
+      left: 0.5mm;
+      right: 0.5mm;
+      text-align: center;
+      font-size: 9px;
       font-weight: bold;
-      margin-bottom: 0.2mm;
       word-wrap: break-word;
-      max-width: 100%;
       line-height: 1.1;
     }
 
     .barcode-container {
-      margin: 0;
-      width: 100%;
+      position: absolute;
+      top: 6mm;
+      left: 0;
+      right: 0;
+      text-align: center;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -227,14 +231,14 @@ function generateLabelHTML(labelData: LabelData): string {
         try {
           JsBarcode("#barcode", "${sku}", {
             format: "${barcodeFormat}",
-            width: 2.5,
-            height: 50,
+            width: 3,
+            height: 70,
             displayValue: true,
-            fontSize: 10,
-            margin: 0,
+            fontSize: 11,
+            margin: 2,
             background: "#ffffff",
             lineColor: "#000000",
-            textMargin: 0,
+            textMargin: 1,
             font: "monospace",
             fontOptions: "bold"
           });
